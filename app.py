@@ -60,5 +60,4 @@ def predict():
     except Exception as e:
         return render_template("index.html", prediction=f"Error: {str(e)}", years=None, prices=None)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+pass
