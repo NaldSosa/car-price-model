@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Price Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">🚗 Car Price Predictor</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/predict" class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">Brand</label>
+                    <select name="Make" class="form-select">
+                        <option>Toyota</option><option>Honda</option><option>Ford</option><option>Chevrolet</option>
+                        <option>BMW</option><option>Mercedes</option><option>Nissan</option><option>Hyundai</option>
+                        <option>Kia</option><option>Volkswagen</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Model</label>
+                    <select name="Model" class="form-select">
+                        <option>Model A</option><option>Model B</option><option>Model C</option>
+                        <option>Model D</option><option>Model E</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Year</label>
+                    <select name="Year" class="form-select">
+                        {% for y in range(2000, 2026) %}
+                        <option>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Fuel Type</label>
+                    <select name="Fuel_Type" class="form-select">
+                        <option>Petrol</option><option>Diesel</option>
+                        <option>Electric</option><option>Hybrid</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Transmission</label>
+                    <select name="Transmission" class="form-select">
+                        <option>Manual</option><option>Automatic</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Owner</label>
+                    <select name="Owner" class="form-select">
+                        <option>1</option><option>2</option><option>3</option><option>4</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Location</label>
+                    <select name="Location" class="form-select">
+                        <option>New York</option><option>Los Angeles</option>
+                        <option>Chicago</option><option>Houston</option><option>Phoenix</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">KM Driven</label>
+                    <input type="number" name="KM_Driven" class="form-control" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Mileage (km/l)</label>
+                    <input type="number" name="Mileage" class="form-control" step="0.1" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Engine CC</label>
+                    <input type="number" name="Engine_CC" class="form-control" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Max Power (BHP)</label>
+                    <select name="Max_Power_BHP" class="form-select">
+                        {% for bhp in range(50, 401, 10) %}
+                        <option>{{ bhp }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-success px-4">Predict</button>
+                </div>
+            </form>
+
+            {% if prediction %}
+                <div class="alert alert-info text-center mt-4">
+                    <h4>Estimated Price: {{ prediction }}</h4>
+                </div>
+            {% endif %}
+
+            {% if years and prices %}
+                <div class="mt-5">
+                    <h5 class="text-center">📈 Price Forecast (Next 10 Years)</h5>
+                    <canvas id="priceChart"></canvas>
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    const ctx = document.getElementById('priceChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ years | tojson }},
+                            datasets: [{
+                                label: 'Predicted Price ($)',
+                                data: {{ prices | tojson }},
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: true }
+                            },
+                            scales: {
+                                y: {
+                                    title: { display: true, text: 'Price ($)' }
+                                },
+                                x: {
+                                    title: { display: true, text: 'Year' }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
